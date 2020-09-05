@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_main.*
@@ -19,6 +20,8 @@ class MainActivity : AppCompatActivity() {
         Model(R.drawable.table, "Table", R.raw.table)
     )
 
+    private lateinit var selectedModel: Model
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,7 +31,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         rvModels.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        rvModels.adapter = ModelAdapter(models)
+        rvModels.adapter = ModelAdapter(models).apply {
+            selectedModel.observe(this@MainActivity, Observer {
+                this@MainActivity.selectedModel = it
+                val newTitle = "Models (${it.title})"
+                tvModel.text = newTitle
+            })
+        }
     }
 
     private fun setupBottomSheet() {
